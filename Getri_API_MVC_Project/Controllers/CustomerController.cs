@@ -29,5 +29,18 @@ namespace Getri_API_MVC_Project.Controllers
             }
             return View(customers);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            Customer customer = new Customer();
+            HttpResponseMessage response = await _client.GetAsync("api/CustomerAPI/GetCustomerById?id=" + id);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = response.Content.ReadAsStringAsync().Result;
+                customer = JsonConvert.DeserializeObject<Customer>(result);
+            }
+            return View(customer);
+        }
     }
 }
