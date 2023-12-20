@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Getri_API_MVC_Project.Models;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Getri_API_MVC_Project.Controllers
 {
@@ -16,9 +18,16 @@ namespace Getri_API_MVC_Project.Controllers
             _client.BaseAddress = baseAddress;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<Customer> customers = new List<Customer>();
+            HttpResponseMessage response = await _client.GetAsync("api/CustomerAPI/AllCustomerList");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = response.Content.ReadAsStringAsync().Result;
+                customers = JsonConvert.DeserializeObject<List<Customer>>(result);
+            }
+            return View(customers);
         }
     }
 }
