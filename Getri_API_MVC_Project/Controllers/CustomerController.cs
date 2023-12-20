@@ -68,5 +68,66 @@ namespace Getri_API_MVC_Project.Controllers
            
             return View(customer);
         }
+
+        public IActionResult Edit(int id)
+        {
+            Customer customer = new Customer();
+            HttpResponseMessage response = _client.GetAsync("api/CustomerAPI/GetCustomerById?id=" + id).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var result = response.Content.ReadAsStringAsync().Result;
+                customer = JsonConvert.DeserializeObject<Customer>(result);
+            }
+            return View(customer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Customer customer)
+        {
+            string url = "api/CustomerAPI/UpdateCustomer";
+            if (ModelState.IsValid)
+            {
+                var response = await _client.PutAsJsonAsync(url, customer);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Unable to update record");
+                }
+            }
+            return View(customer);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            Customer customer = new Customer();
+            HttpResponseMessage response = _client.GetAsync("api/CustomerAPI/GetCustomerById?id=" + id).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var result = response.Content.ReadAsStringAsync().Result;
+                customer = JsonConvert.DeserializeObject<Customer>(result);
+            }
+            return View(customer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Customer customer)
+        {
+            string url = "api/CustomerAPI/DeleteCustomer?id=" + customer.CustomerId;
+            var response = await _client.DeleteAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Unable to delete record");
+            }
+            return View(customer);
+        }
     }
 }
