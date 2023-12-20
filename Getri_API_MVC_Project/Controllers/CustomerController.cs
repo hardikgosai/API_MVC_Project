@@ -42,5 +42,31 @@ namespace Getri_API_MVC_Project.Controllers
             }
             return View(customer);
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Customer customer)
+        {
+            string url = "api/CustomerAPI/CreateCustomer";
+            if(ModelState.IsValid)
+            {
+                var response = await _client.PostAsJsonAsync(url, customer);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Unable to insert record");
+                }
+            }
+           
+            return View(customer);
+        }
     }
 }
